@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Excel Desktop (Edge WebView2)",
+      "type": "pwa-msedge",
+      "request": "attach",
+      "port": 9222,
+      "urlFilter": "https://localhost:3000/*",
+      "webRoot": "${workspaceFolder}",
+      "timeout": 600000,
+      "preLaunchTask": "Debug: Excel Desktop",
+      "postDebugTask": "Stop Debug"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "namespace": "XERENITY",
+  "functions": [
+    {
+      "name": "PING",
+      "description": "Dev ping. Returns 1.",
+      "id": "PING",
+      "parameters": [],
+      "result": { "type": "number", "dimensionality": "scalar" }
+    },
+    {
+      "name": "XTY",
+      "description": "Xerenity time series by ticker. Returns [time,value] rows.",
+      "id": "XTY",
+      "parameters": [
+        { "name": "ticker", "description": "e.g. ibr_1yr", "type": "string", "dimensionality": "scalar" }
+      ],
+      "result": { "type": "any", "dimensionality": "matrix" }
+    }
+  ]
+}
+
