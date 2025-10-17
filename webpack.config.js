@@ -3,10 +3,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const fs = require("fs");
 const path = require("path");
-
-// Cambia esto si vas a publicar en producción
-const urlDev = "https://localhost:3000/";
-const urlProd = "https://www.contoso.com/";
+const urlProd = "https://avelezx.github.io/add-in/";
 
 /* global require, module, process, __dirname */
 
@@ -25,6 +22,8 @@ module.exports = async (_env, options) => {
 
     output: {
       clean: true,
+      path: path.resolve(__dirname, "dist"), // 📁 donde Webpack colocará los archivos compilados
+      publicPath: urlProd, // 🌐 base URL de tu add-in en GitHub Pages
     },
 
     resolve: {
@@ -92,31 +91,14 @@ module.exports = async (_env, options) => {
             from: "manifest*.xml",
             to: "[name][ext]",
             transform(content) {
-              // En producción reemplaza URLs dev por prod (y quita /public si estuviera)
-              return dev
-                ? content
-                : content.toString().replace(new RegExp(urlDev + "(?:public/)?", "g"), urlProd);
+              return content
+              .toString()
+              .replace(/https:\/\/localhost:3000\//g, urlProd)
+              .replace(/https:\/\/www\.contoso\.com\//g, urlProd);
             },
           },
         ],
       }),
     ],
-
-    // Webpack Dev Server v5 con HTTPS (lee certificados desde variables)
-    devServer: {
-      server: {
-        type: "https",
-        options: {
-          key: fs.readFileSync(process.env.SSL_KEY_FILE),
-          cert: fs.readFileSync(process.env.SSL_CRT_FILE),
-        },
-      },
-      host: "localhost", // si tu IT molesta con ::1, cambia a "127.0.0.1"
-      port: 3000,
-      hot: true,
-
-      // Sirve la RAÍZ del proyecto -> /assets/... existe de verdad
-      static: [{ directory: path.join(__dirname), publicPath: "/" }],
-    },
   };
 };

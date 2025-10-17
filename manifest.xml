@@ -7,11 +7,10 @@
   xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
   xsi:type="TaskPaneApp">
 
-  <!-- Este ES el ID que identifica tu add-in. Puedes mantenerlo,
-       o cambiarlo por un GUID nuevo si Excel sigue mostrando el popup del add-in viejo. -->
+  
   <Id>c2f3a892-d0b6-4d67-bc84-7e10eaefc0b7</Id>
 
-  <Version>1.0.0.2</Version>
+  <Version>1.0.0.3</Version>
   <ProviderName>Saman WM</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Saman-xerenity"/>
@@ -35,26 +34,26 @@
 
   <Permissions>ReadWriteDocument</Permissions>
 
-  <!-- IMPORTANTE: VersionOverrides V1_1 con el schema de *mailappversionoverrides/1.1* -->
   <VersionOverrides
-    xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides/1.0"
-    xsi:type="VersionOverridesV1_0">
+    xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
+    xsi:type="VersionOverridesV1_1">
 
     <Hosts>
       <Host xsi:type="Workbook">
         <AllFormFactors>
           <ExtensionPoint xsi:type="CustomFunctions">
-            <!-- El <Id> dentro de ExtensionPoint es opcional; lo omito -->
-            <Script>https://avelezx.github.io/add-in/assets/functions.js</Script>
-            <Metadata>https://avelezx.github.io/add-in/assets/custom-functions.json</Metadata>
-            <Page>https://avelezx.github.io/add-in/taskpane.html</Page>
-            <Namespace>XERENITY</Namespace>
+            <Script>
+              <SourceLocation resid="Functions.Script.Url"/>
+            </Script>
+            <Metadata>
+              <SourceLocation resid="Functions.Metadata.Url"/>
+            </Metadata>
+            <Namespace resid="Functions.Namespace"/>
           </ExtensionPoint>
         </AllFormFactors>
       </Host>
     </Hosts>
 
-    <!-- Recursos opcionales; quité las entradas /public que no existen -->
     <Resources>
       <bt:Images>
   <bt:Image id="Icon.16x16" DefaultValue="https://avelezx.github.io/add-in/assets/logo-filled.png"/>
@@ -62,8 +61,8 @@
   <bt:Image id="Icon.80x80" DefaultValue="https://avelezx.github.io/add-in/assets/logo-filled.png"/>
       </bt:Images>
       <bt:Urls>
-  <bt:Url id="Taskpane.Url" DefaultValue="https://avelezx.github.io/add-in/taskpane.html"/>
-  <bt:Url id="Commands.Url" DefaultValue="https://avelezx.github.io/add-in/commands.html"/>
+  <bt:Url id="Functions.Script.Url" DefaultValue="https://avelezx.github.io/add-in/assets/functions.js"/>
+  <bt:Url id="Functions.Metadata.Url" DefaultValue="https://avelezx.github.io/add-in/assets/custom-functions.json"/>   
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="Functions.Namespace" DefaultValue="XERENITY"/>
@@ -76,6 +75,9 @@
         <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Open task pane"/>
       </bt:LongStrings>
     </Resources>
+
   </VersionOverrides>
+
   <SupportUrl DefaultValue="https://avelezx.github.io/add-in/support"/>
+
 </OfficeApp>
