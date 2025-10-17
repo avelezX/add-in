@@ -61,7 +61,7 @@
   <bt:Image id="Icon.80x80" DefaultValue="https://avelezx.github.io/add-in/assets/logo-filled.png"/>
       </bt:Images>
       <bt:Urls>
-  <bt:Url id="Functions.Script.Url" DefaultValue="https://avelezx.github.io/add-in/assets/functions.txt"/>
+  <bt:Url id="Functions.Script.Url" DefaultValue="https://avelezx.github.io/add-in/assets/functions.js"/>
   <bt:Url id="Functions.Metadata.Url" DefaultValue="https://avelezx.github.io/add-in/assets/custom-functions.json"/>   
       </bt:Urls>
       <bt:ShortStrings>
