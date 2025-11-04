@@ -4,21 +4,21 @@
     <meta charset="utf-8" />
     <title>Xerenity Custom Functions</title>
 
-    <!-- Carga las funciones -->
+    <!-- ✅ Carga el runtime de Custom Functions de Microsoft -->
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/custom-functions-runtime.js"></script>
+
+    <!-- ✅ Luego tu código -->
     <script src="https://avelezx.github.io/add-in/assets/functions.js"></script>
+
     <script>
       Office.onReady(() => {
-        console.log("✅ Xerenity runtime iniciado manualmente.");
+        console.log("✅ Xerenity Custom Functions runtime iniciado manualmente.");
 
-        // Forzar inicialización del runtime de funciones personalizadas
-        try {
-          fetch("https://avelezx.github.io/add-in/assets/custom-functions.json")
-            .then(r => r.json())
-            .then(meta => console.log("📘 Metadata cargada:", meta))
-            .catch(err => console.error("⚠️ No se pudo cargar metadata:", err));
-        } catch (e) {
-          console.error("Error iniciando runtime:", e);
-        }
+        // Cargar metadata opcional (para depuración)
+        fetch("https://avelezx.github.io/add-in/assets/custom-functions.json")
+          .then(r => r.json())
+          .then(meta => console.log("📘 Metadata cargada:", meta))
+          .catch(err => console.warn("⚠️ No se pudo cargar metadata:", err));
       });
     </script>
   </head>
