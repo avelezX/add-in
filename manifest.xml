@@ -1,19 +1,26 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
-           xsi:type="TaskPaneApp">
+<?xml version="1.0" encoding="UTF-8"?>
+<OfficeApp
+  xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+  xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
+  xsi:type="TaskPaneApp">
 
-  <Id>c2f3a892-d0b6-4d67-bc84-7e10eaefc0b7</Id>
+  <Id>0fb3d32f-7a0b-4e26-944c-4e8a8ffca01a</Id>
   <Version>1.0.0.5</Version>
-  <ProviderName>Saman WM</ProviderName>
+  <ProviderName>Xerenity</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
+  <DisplayName DefaultValue="Xerenity Add-in"/>
+  <Description DefaultValue="Add-in para funciones personalizadas en Excel."/>
 
-  <DisplayName DefaultValue="Saman-xerenity"/>
-  <Description DefaultValue="Custom Functions that read Xerenity data"/>
+  <IconUrl DefaultValue="https://avelezx.github.io/add-in/assets/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://avelezx.github.io/add-in/assets/icon-80.png"/>
 
-  <IconUrl DefaultValue="https://avelezx.github.io/add-in/assets/logo-filled.png"/>
-  <HighResolutionIconUrl DefaultValue="https://avelezx.github.io/add-in/assets/logo-filled.png"/>
+  <SupportUrl DefaultValue="https://avelezx.github.io/add-in/"/>
+
+  <AppDomains>
+    <AppDomain>https://avelezx.github.io</AppDomain>
+  </AppDomains>
 
   <Hosts>
     <Host Name="Workbook"/>
@@ -21,43 +28,53 @@
 
   <Requirements>
     <Sets DefaultMinVersion="1.1">
-      <Set Name="CustomFunctionsRuntime" MinVersion="1.1"/>
+      <Set Name="CustomFunctionsRuntime"/>
     </Sets>
   </Requirements>
 
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://avelezx.github.io/add-in/assets/functions.html"/>
+  </DefaultSettings>
+
   <Permissions>ReadWriteDocument</Permissions>
 
-  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
-                    xsi:type="VersionOverridesV1_1">
+  <VersionOverrides xsi:type="VersionOverridesV1_0">
+    <ov:Hosts>
+      <ov:Host xsi:type="Workbook">
+        <ov:AllFormFactors>
+          <ov:ExtensionPoint xsi:type="CustomFunctions">
+            <!-- Script principal -->
+            <ov:Script>
+              <ov:SourceLocation resid="Functions.Script.Url"/>
+            </ov:Script>
 
-    <Hosts>
-      <Host xsi:type="Workbook">
-        <AllFormFactors>
-          <ExtensionPoint xsi:type="CustomFunctions">
-            <Script>
-              <SourceLocation resid="Functions.Script.Url"/>
-            </Script>
-            <Metadata>
-              <SourceLocation resid="Functions.Metadata.Url"/>
-              <Namespace resid="Functions.Namespace"/>
-            </Metadata>
-          </ExtensionPoint>
-        </AllFormFactors>
-      </Host>
-    </Hosts>
+            <!-- Página HTML requerida -->
+            <ov:Page>
+              <ov:SourceLocation resid="Functions.Page.Url"/>
+            </ov:Page>
 
-    <Resources>
+            <!-- Archivo JSON con metadatos -->
+            <ov:Metadata>
+              <ov:SourceLocation resid="Functions.Metadata.Url"/>
+            </ov:Metadata>
+
+            <!-- Namespace de las funciones -->
+            <ov:Namespace resid="Functions.Namespace"/>
+          </ov:ExtensionPoint>
+        </ov:AllFormFactors>
+      </ov:Host>
+    </ov:Hosts>
+
+    <ov:Resources>
       <bt:Urls>
         <bt:Url id="Functions.Script.Url" DefaultValue="https://avelezx.github.io/add-in/assets/functions.js"/>
         <bt:Url id="Functions.Metadata.Url" DefaultValue="https://avelezx.github.io/add-in/assets/custom-functions.json"/>
+        <bt:Url id="Functions.Page.Url" DefaultValue="https://avelezx.github.io/add-in/assets/functions.html"/>
       </bt:Urls>
+
       <bt:ShortStrings>
         <bt:String id="Functions.Namespace" DefaultValue="XERENITY"/>
       </bt:ShortStrings>
-    </Resources>
-
+    </ov:Resources>
   </VersionOverrides>
-
-  <SupportUrl DefaultValue="https://avelezx.github.io/add-in/support"/>
-
 </OfficeApp>
