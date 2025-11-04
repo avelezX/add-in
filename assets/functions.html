@@ -1,7 +1,28 @@
-<!doctype html>
-<html>
-  <head><meta charset="utf-8"><title>XERENITY Custom Functions</title></head>
-  <body>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Xerenity Custom Functions</title>
+
+    <!-- Carga las funciones -->
     <script src="https://avelezx.github.io/add-in/assets/functions.js"></script>
+    <script>
+      Office.onReady(() => {
+        console.log("✅ Xerenity runtime iniciado manualmente.");
+
+        // Forzar inicialización del runtime de funciones personalizadas
+        try {
+          fetch("https://avelezx.github.io/add-in/assets/custom-functions.json")
+            .then(r => r.json())
+            .then(meta => console.log("📘 Metadata cargada:", meta))
+            .catch(err => console.error("⚠️ No se pudo cargar metadata:", err));
+        } catch (e) {
+          console.error("Error iniciando runtime:", e);
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <p>Runtime host de funciones personalizadas Xerenity.</p>
   </body>
 </html>
