@@ -2,11 +2,11 @@
 <OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
-           xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides/1.0"
+           xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
            xsi:type="TaskPaneApp">
 
   <Id>0fb3d32f-7a0b-4e26-944c-4e8a8ffca01a</Id>
-  <Version>1.0.0.8</Version>
+  <Version>1.0.1.0</Version>
   <ProviderName>Saman WM</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
 
@@ -28,26 +28,72 @@
 
   <Permissions>ReadWriteDocument</Permissions>
 
-  <!-- Esta página invisible carga el runtime de las funciones -->
   <DefaultSettings>
     <SourceLocation DefaultValue="https://avelezx.github.io/add-in/assets/functions.html"/>
   </DefaultSettings>
 
+  <Action xsi:type="ShowTaskpane">
+    <TaskpaneId>ButtonId1</TaskpaneId>
+    <SourceLocation DefaultValue="https://avelezx.github.io/add-in/assets/functions.html"/>
+  </Action>
+
   <ov:VersionOverrides xsi:type="VersionOverridesV1_0">
     <ov:Hosts>
       <ov:Host xsi:type="Workbook">
-        <ov:DesktopFormFactor>
-          <ov:ExtensionPoint xsi:type="TaskPane">
-            <ov:SourceLocation resid="Functions.Page.Url"/>
+        <ov:AllFormFactors>
+          <!-- Panel lateral mínimo -->
+          <ov:ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <ov:CustomTab id="TabCustomFunctions">
+              <ov:Group id="GroupCustomFunctions" label="Xerenity">
+                <ov:Label resid="Tab.Label"/>
+                <ov:Icon>
+                  <bt:Image resid="Icon.Url"/>
+                </ov:Icon>
+                <ov:Control xsi:type="Button" id="TaskpaneButton">
+                  <ov:Label resid="Taskpane.Label"/>
+                  <ov:Supertip>
+                    <ov:Title resid="Taskpane.Title"/>
+                    <ov:Description resid="Taskpane.Description"/>
+                  </ov:Supertip>
+                  <ov:Icon>
+                    <bt:Image resid="Icon.Url"/>
+                  </ov:Icon>
+                  <ov:Action xsi:type="ShowTaskpane">
+                    <ov:SourceLocation resid="Taskpane.Url"/>
+                  </ov:Action>
+                </ov:Control>
+              </ov:Group>
+            </ov:CustomTab>
           </ov:ExtensionPoint>
-        </ov:DesktopFormFactor>
+
+          <!-- Tus funciones personalizadas -->
+          <ov:ExtensionPoint xsi:type="CustomFunctions">
+            <ov:Script>
+              <ov:SourceLocation resid="Functions.Script.Url"/>
+            </ov:Script>
+            <ov:Metadata>
+              <ov:SourceLocation resid="Functions.Metadata.Url"/>
+            </ov:Metadata>
+            <ov:Namespace resid="Functions.Namespace"/>
+          </ov:ExtensionPoint>
+        </ov:AllFormFactors>
       </ov:Host>
     </ov:Hosts>
 
     <ov:Resources>
       <bt:Urls>
-        <bt:Url id="Functions.Page.Url" DefaultValue="https://avelezx.github.io/add-in/assets/functions.html"/>
+        <bt:Url id="Taskpane.Url" DefaultValue="https://avelezx.github.io/add-in/assets/functions.html"/>
+        <bt:Url id="Functions.Script.Url" DefaultValue="https://avelezx.github.io/add-in/assets/functions.js"/>
+        <bt:Url id="Functions.Metadata.Url" DefaultValue="https://avelezx.github.io/add-in/assets/custom-functions.json"/>
+        <bt:Url id="Icon.Url" DefaultValue="https://avelezx.github.io/add-in/assets/logo-filled.png"/>
       </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="Tab.Label" DefaultValue="Xerenity"/>
+        <bt:String id="Taskpane.Label" DefaultValue="Open Panel"/>
+        <bt:String id="Taskpane.Title" DefaultValue="Saman Xerenity Functions"/>
+        <bt:String id="Taskpane.Description" DefaultValue="Panel for Xerenity custom functions"/>
+        <bt:String id="Functions.Namespace" DefaultValue="XERENITY"/>
+      </bt:ShortStrings>
     </ov:Resources>
   </ov:VersionOverrides>
 </OfficeApp>

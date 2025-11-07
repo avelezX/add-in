@@ -4,25 +4,62 @@
     <meta charset="utf-8" />
     <title>Xerenity Custom Functions</title>
 
-    <!-- ✅ Carga el runtime de Custom Functions de Microsoft -->
+    <!-- ✅ Runtime oficial de Custom Functions -->
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/custom-functions-runtime.js"></script>
 
-    <!-- ✅ Luego tu código -->
+    <!-- ✅ Tu código de funciones -->
     <script src="https://avelezx.github.io/add-in/assets/functions.js"></script>
 
-    <script>
-      Office.onReady(() => {
-        console.log("✅ Xerenity Custom Functions runtime iniciado manualmente.");
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 1em;
+      }
+      h2 {
+        color: #0078d4;
+      }
+      p {
+        margin-top: 0.5em;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>✅ Runtime host de funciones personalizadas Xerenity</h2>
+    <p>El complemento está cargado. Puedes cerrar este panel si lo deseas.</p>
 
-        // Cargar metadata opcional (para depuración)
+    <script>
+      console.log("🔄 Inicializando entorno Xerenity Custom Functions...");
+
+      Office.onReady(() => {
+        console.log("✅ Office.onReady ejecutado.");
+        // Intentar cargar metadata (opcional)
         fetch("https://avelezx.github.io/add-in/assets/custom-functions.json")
           .then(r => r.json())
           .then(meta => console.log("📘 Metadata cargada:", meta))
           .catch(err => console.warn("⚠️ No se pudo cargar metadata:", err));
       });
+
+      // 🧩 Forzar activación del runtime en Excel local si no está activo
+      if (typeof CustomFunctions === "undefined") {
+        console.warn("⚠️ CustomFunctions runtime no activo. Intentando inicializar manualmente...");
+        if (Office && Office.addin) {
+          Office.addin.setStartupBehavior(Office.StartupBehavior.load);
+        }
+
+        Office.onReady(() => {
+          console.log("🧩 Intentando activar CustomFunctions en entorno local...");
+          try {
+            import("https://appsforoffice.microsoft.com/lib/1/hosted/custom-functions-runtime.js")
+              .then(() => console.log("✅ Runtime cargado manualmente."))
+              .catch(err => console.error("❌ Error al cargar runtime manualmente:", err));
+          } catch (e) {
+            console.error("❌ No se pudo inicializar manualmente:", e);
+          }
+        });
+      } else {
+        console.log("✅ CustomFunctions runtime activo y listo.");
+      }
     </script>
-  </head>
-  <body>
-    <p>Runtime host de funciones personalizadas Xerenity.</p>
   </body>
 </html>
