@@ -1,7 +1,6 @@
 /* global CustomFunctions */
 console.log("Custom Functions script loaded");
 
-
 var RPC_POST_URL = "https://tvpehjbqxpiswkqszwwv.supabase.co/rest/v1/rpc/search";
 var PARAM_NAME   = "ticket";
 var PROFILE_NAME = "public";
@@ -16,13 +15,13 @@ function ymdToExcelSerial(isoYmd) {
   return (thisUTC - excelEpochUTC) / 86400000;
 }
 
-/** =XERENITY.XTY(ticker) -> [["time","value"], [serial,value], ...] */
-function XTY(ticker) {
+/** =XERENITY.XTY(ticket) -> [["time","value"], [serial,value], ...] */
+function XTY(ticket) {
   return new Promise(function(resolve, reject) {
-    if (!ticker || typeof ticker !== "string") {
+    if (!ticket || typeof ticket !== "string") {
       return reject(new CustomFunctions.Error(
         CustomFunctions.ErrorCode.invalidValue,
-        'Debes pasar un ticker, ej: XERENITY.XTY("ibr_1yr").'
+        'Debes pasar un ticket, ej: XERENITY.XTY("ibr_1yr").'
       ));
     }
 
@@ -34,7 +33,7 @@ function XTY(ticker) {
       "Authorization": "Bearer " + API_KEY
     };
 
-    var bodyObj = {}; bodyObj[PARAM_NAME] = ticker.trim();
+    var bodyObj = {}; bodyObj[PARAM_NAME] = ticket.trim();
 
     fetch(RPC_POST_URL, {
       method: "POST",
