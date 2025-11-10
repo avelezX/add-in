@@ -3,7 +3,7 @@ console.log("Custom Functions script loaded");
 
 
 var RPC_POST_URL = "https://tvpehjbqxpiswkqszwwv.supabase.co/rest/v1/rpc/search";
-var PARAM_NAME   = "ticker";
+var PARAM_NAME   = "ticket";
 var PROFILE_NAME = "public";
 var API_KEY      = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2cGVoamJxeHBpc3drcXN6d3d2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTY0NTEzODksImV4cCI6MjAxMjAyNzM4OX0.LZW0i9HU81lCdyjAdqjwwF4hkuSVtsJsSDQh7blzozw";
 
