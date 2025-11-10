@@ -1,19 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Xerenity Taskpane</title>
+  <meta charset="utf-8" />
+  <title>Saman Xerenity Tools</title>
   <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
-  <script src="taskpane.js"></script>
-  <link rel="icon" href="logo-filled.png" />
+  <script src="https://avelezx.github.io/add-in/assets/functions.js"></script>
+  <script src="https://avelezx.github.io/add-in/assets/taskpane.js"></script>
+  <style>
+    body {
+      background-color: #1e1e1e;
+      color: #eee;
+      font-family: "Segoe UI", sans-serif;
+      padding: 1rem;
+    }
+    h2 {
+      color: #00a2ed;
+      font-size: 1.3rem;
+    }
+    button {
+      display: block;
+      width: 100%;
+      margin: 0.5rem 0;
+      padding: 0.6rem;
+      border: none;
+      border-radius: 6px;
+      background: #00a2ed;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover { background: #0086c5; }
+    #status {
+      font-size: 0.9rem;
+      color: #ccc;
+      margin-top: 1rem;
+    }
+  </style>
 </head>
 <body>
   <h2>Saman Xerenity Tools</h2>
-  <p>Usa los botones en la cinta de Excel para ejecutar:</p>
-  <ul>
-    <li><b>Run XTY</b>: consulta datos de Supabase</li>
-    <li><b>Ping</b>: prueba de conexión</li>
-  </ul>
+  <p>Usa los botones para ejecutar funciones en Excel:</p>
+  <button id="btnPing">Ping</button>
+  <button id="btnXty">Run XTY</button>
   <div id="status">Esperando conexión con Excel...</div>
 </body>
 </html>
