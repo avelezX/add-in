@@ -13,14 +13,20 @@
       font-family: "Segoe UI", sans-serif;
       padding: 1rem;
     }
-    h2 {
-      color: #00a2ed;
-      font-size: 1.3rem;
+    h2 { color: #00a2ed; font-size: 1.3rem; }
+    input {
+      width: 100%;
+      padding: 0.6rem;
+      border-radius: 6px;
+      border: none;
+      margin-top: 0.4rem;
+      margin-bottom: 0.8rem;
+      font-size: 1rem;
     }
     button {
       display: block;
       width: 100%;
-      margin: 0.5rem 0;
+      margin: 0.4rem 0;
       padding: 0.6rem;
       border: none;
       border-radius: 6px;
@@ -34,14 +40,21 @@
       font-size: 0.9rem;
       color: #ccc;
       margin-top: 1rem;
+      min-height: 1.2rem;
     }
   </style>
 </head>
 <body>
   <h2>Saman Xerenity Tools</h2>
   <p>Usa los botones para ejecutar funciones en Excel:</p>
+
   <button id="btnPing">Ping</button>
+
+  <hr style="border: 1px solid #333; margin: 1rem 0;">
+  <label for="tickerInput">Ticker:</label>
+  <input id="tickerInput" placeholder="Ej. ibr_1yr">
   <button id="btnXty">Run XTY</button>
+
   <div id="status">Esperando conexión con Excel...</div>
 </body>
 </html>

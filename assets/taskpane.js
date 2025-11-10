@@ -21,10 +21,13 @@ Office.onReady(() => {
 
   // Botón XTY
   document.getElementById("btnXty").addEventListener("click", async () => {
-    const ticker = prompt("Introduce el ticker (ej. ibr_1yr):");
-    if (!ticker) return;
+    const ticker = document.getElementById("tickerInput").value.trim();
+    if (!ticker) {
+      document.getElementById("status").textContent = "⚠️ Debes ingresar un ticker.";
+      return;
+    }
 
-    document.getElementById("status").textContent = "Consultando " + ticker + "...";
+    document.getElementById("status").textContent = `Consultando ${ticker}...`;
 
     try {
       const data = await XTY(ticker);
@@ -34,10 +37,10 @@ Office.onReady(() => {
         range.values = data;
         await ctx.sync();
       });
-      document.getElementById("status").textContent = "Datos cargados en Excel ✅";
+      document.getElementById("status").textContent = `Datos de ${ticker} cargados ✅`;
     } catch (err) {
       console.error(err);
-      document.getElementById("status").textContent = "Error al ejecutar XTY ❌: " + err.message;
+      document.getElementById("status").textContent = `Error en XTY ❌: ${err.message}`;
     }
   });
 });
