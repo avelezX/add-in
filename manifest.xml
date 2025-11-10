@@ -6,12 +6,12 @@
            xsi:type="TaskPaneApp">
 
   <Id>0fb3d32f-7a0b-4e26-944c-4e8a8ffca01a</Id>
-  <Version>1.0.5.0</Version>
+  <Version>1.0.8.0</Version>
   <ProviderName>Saman WM</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
 
   <DisplayName DefaultValue="Saman Xerenity Tools"/>
-  <Description DefaultValue="Taskpane add-in to fetch Xerenity data and write to Excel"/>
+  <Description DefaultValue="Xerenity integration for Excel (Taskpane + Commands)"/>
 
   <IconUrl DefaultValue="https://avelezx.github.io/add-in/assets/logo-filled.png"/>
   <HighResolutionIconUrl DefaultValue="https://avelezx.github.io/add-in/assets/logo-filled.png"/>
@@ -30,47 +30,13 @@
     <Hosts>
       <Host xsi:type="Workbook">
         <DesktopFormFactor>
-          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+
+          <!-- ✅ RIBBON FORZADO -->
+          <ExtensionPoint xsi:type="CustomUI">
             <CustomTab id="Tab.Xerenity">
               <Group id="Group.Xerenity" label="Xerenity Tools">
-                <Label resid="GroupLabel"/>
-                <Icon>
-                  <bt:Image size="16" resid="IconUrl"/>
-                  <bt:Image size="32" resid="IconUrl"/>
-                  <bt:Image size="80" resid="IconUrl"/>
-                </Icon>
-
-                <Control xsi:type="Button" id="Button.RunXTY">
-                  <Label resid="ButtonXTYLabel"/>
-                  <Supertip>
-                    <Title resid="ButtonXTYLabel"/>
-                    <Description resid="ButtonXTYDesc"/>
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="IconUrl"/>
-                    <bt:Image size="32" resid="IconUrl"/>
-                    <bt:Image size="80" resid="IconUrl"/>
-                  </Icon>
-                  <Action xsi:type="ExecuteFunction">
-                    <FunctionName>runXTY</FunctionName>
-                  </Action>
-                </Control>
-
-                <Control xsi:type="Button" id="Button.PING">
-                  <Label resid="ButtonPINGLabel"/>
-                  <Supertip>
-                    <Title resid="ButtonPINGLabel"/>
-                    <Description resid="ButtonPINGDesc"/>
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="IconUrl"/>
-                    <bt:Image size="32" resid="IconUrl"/>
-                    <bt:Image size="80" resid="IconUrl"/>
-                  </Icon>
-                  <Action xsi:type="ExecuteFunction">
-                    <FunctionName>runPING</FunctionName>
-                  </Action>
-                </Control>
+                <Control xsi:type="Button" id="btnPing" label="Ping" onAction="runPING"/>
+                <Control xsi:type="Button" id="btnRunXTY" label="Run XTY" onAction="runXTY"/>
               </Group>
             </CustomTab>
           </ExtensionPoint>
@@ -78,6 +44,7 @@
           <ExtensionPoint xsi:type="TaskPane">
             <SourceLocation resid="Taskpane.Url"/>
           </ExtensionPoint>
+
         </DesktopFormFactor>
       </Host>
     </Hosts>
@@ -86,21 +53,6 @@
       <bt:Urls>
         <bt:Url id="Taskpane.Url" DefaultValue="https://avelezx.github.io/add-in/assets/taskpane.html"/>
       </bt:Urls>
-
-      <bt:ShortStrings>
-        <bt:String id="GroupLabel" DefaultValue="Xerenity"/>
-        <bt:String id="ButtonXTYLabel" DefaultValue="Run XTY"/>
-        <bt:String id="ButtonPINGLabel" DefaultValue="Ping"/>
-      </bt:ShortStrings>
-
-      <bt:LongStrings>
-        <bt:String id="ButtonXTYDesc" DefaultValue="Fetch Xerenity time series and write it to Excel"/>
-        <bt:String id="ButtonPINGDesc" DefaultValue="Check connection"/>
-      </bt:LongStrings>
-
-      <bt:Images>
-        <bt:Image id="IconUrl" DefaultValue="https://avelezx.github.io/add-in/assets/logo-filled.png"/>
-      </bt:Images>
     </Resources>
   </VersionOverrides>
 </OfficeApp>
