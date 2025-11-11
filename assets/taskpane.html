@@ -81,9 +81,12 @@
     <p>Conexión con Supabase y funciones personalizadas:</p>
     <button id="btnPing">Ping</button>
 
-    <label for="tickerInput">Ticker:</label>
+    <label for="tickerInput">Serie (Ticker) :</label>
     <input id="tickerInput" placeholder="Ej. ibr_1yr">
-    <button id="btnSeries">Series</button>
+    <div style="display: flex; gap: 0.5rem;">
+      <button id="btnSeriesAll" style="flex:1; background:#0078d7;">All</button>
+      <button id="btnSeriesLast" style="flex:1; background:#0078d7;">Last</button>
+    </div>
   </section>
 
   <div id="status">Esperando conexión con Excel...</div>
