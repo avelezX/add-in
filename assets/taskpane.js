@@ -31,10 +31,20 @@ Office.onReady(() => {
 
     try {
       const data = await XTY(ticker);
+      // Reemplaza TODO el bloque Excel.run del botón XTY por este:
       await Excel.run(async (ctx) => {
-        const sheet = ctx.workbook.worksheets.getActiveWorksheet();
-        const range = sheet.getActiveCell().getResizedRange(data.length - 1, data[0].length - 1);
+        // 1) Celda activa correcta
+        const start = ctx.workbook.getActiveCell();
+
+        // 2) Dimensiones seguras
+        const rows = Array.isArray(data) ? data.length : 0;
+        const cols = rows > 0 && Array.isArray(data[0]) ? data[0].length : 0;
+        if (rows === 0 || cols === 0) throw new Error("La consulta no devolvió filas.");
+
+        // 3) Escribe la matriz empezando en la celda activa
+        const range = start.getResizedRange(rows - 1, cols - 1);
         range.values = data;
+
         await ctx.sync();
       });
       document.getElementById("status").textContent = `Datos de ${ticker} cargados ✅`;
