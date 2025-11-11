@@ -4,24 +4,29 @@ Office.onReady(() => {
   console.log("Office ready - Xerenity panel active");
   document.getElementById("status").textContent = "Conectado a Excel ✔️";
 
-  // ===========================
   // 🧮 SAMÁN TOOLS - Promedio
-  // ===========================
   document.getElementById("btnPromedio").addEventListener("click", async () => {
     document.getElementById("status").textContent = "Calculando promedio...";
     await Excel.run(async (ctx) => {
       const range = ctx.workbook.getSelectedRange();
-      range.load("values, address");
-      await ctx.sync();
+      range.load(["values", "address", "rowCount", "columnCount"]);
+      await ctx.sync(); // Necesario antes de usar rowCount/columnCount
 
-      const valores = range.values.flat().filter(v => typeof v === "number" && !isNaN(v));
+      const valores = [];
+      for (const fila of range.values) {
+        for (const v of fila) {
+          if (typeof v === "number" && isFinite(v)) valores.push(v);
+        }
+      }
       if (!valores.length) throw new Error("No hay números en el rango seleccionado.");
 
       const promedio = valores.reduce((a, b) => a + b, 0) / valores.length;
-      const output = range.getOffsetRange(range.rowCount, 0);
-      output.values = [[`Promedio: ${promedio.toFixed(4)}`]];
-      await ctx.sync();
 
+      // Escribir una celda debajo del rango seleccionado (misma columna inicial)
+      const target = range.getOffsetRange(range.rowCount, 0).getCell(0, 0);
+      target.values = [[`Promedio: ${promedio.toFixed(4)}`]];
+
+      await ctx.sync();
       document.getElementById("status").textContent =
         `Promedio calculado para ${range.address} ✅`;
     }).catch(err => {
