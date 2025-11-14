@@ -75,10 +75,18 @@
     <p>Operaciones básicas sobre celdas:</p>
     <button id="btnPromedio">Promedio</button>
     <hr style="border: 1px solid #333; margin: 1rem 0;">
-    <h3>Interpolar tasa</h3>
-    <label for="yearInput">Año a interpolar:</label>
-    <input id="yearInput" placeholder="Ej. 2030">
-    <button id="btnInterpolar">Interpolar</button>
+    <h3>Interpolación Lineal</h3>
+    <div style="display:flex; gap:8px; margin-bottom:8px;">
+      <button id="btnPickX" style="flex:1; padding:4px 6px; font-size:0.85rem;">
+        Años (X)
+      </button>
+      <button id="btnPickY" style="flex:1; padding:4px 6px; font-size:0.85rem;">
+        Tasas (Y)
+      </button>
+    </div>
+    <label for="interpYear">Año a interpolar:</label>
+    <input id="interpYear" placeholder="Ej. 2030.5">
+    <button id="btnInterp">Interpolar</button>
   </section>
 
   <h2>Xerenity Tools</h2>
