@@ -33,6 +33,79 @@ Office.onReady(() => {
       document.getElementById("status").textContent = `Error ❌: ${err.message}`;
     });
   });
+  // 🧮 SAMÁN TOOLS - Interpolación lineal (con input para el año)
+  document.getElementById("btnInterpolar").addEventListener("click", async () => {
+    const xValue = parseFloat(document.getElementById("yearInput").value.trim());
+    if (isNaN(xValue)) {
+      document.getElementById("status").textContent = "⚠️ Debes ingresar un año válido.";
+      return;
+    }
+
+    document.getElementById("status").textContent = "Selecciona los rangos para interpolar...";
+
+    try {
+      await Excel.run(async (ctx) => {
+        const sheet = ctx.workbook.worksheets.getActiveWorksheet();
+
+        // 🔹 Paso 1: seleccionar años
+        document.getElementById("status").textContent =
+          "Selecciona las celdas de los años (X) y presiona Enter.";
+        await new Promise((resolve) => setTimeout(resolve, 1800));
+        const rangeX = ctx.workbook.getSelectedRange();
+        rangeX.load("values,address");
+        await ctx.sync();
+
+        // 🔹 Paso 2: seleccionar tasas
+        document.getElementById("status").textContent =
+          "Selecciona las celdas de las tasas (Y) y presiona Enter.";
+        await new Promise((resolve) => setTimeout(resolve, 1800));
+        const rangeY = ctx.workbook.getSelectedRange();
+        rangeY.load("values,address");
+        await ctx.sync();
+
+        // Validaciones
+        const X = rangeX.values.flat().map(Number);
+        const Y = rangeY.values.flat().map(Number);
+
+        if (X.length !== Y.length) throw new Error("Los rangos X e Y deben tener el mismo tamaño.");
+        if (X.some(isNaN) || Y.some(isNaN))
+          throw new Error("Los rangos deben contener solo números.");
+
+        // 🔹 Interpolación
+        let result;
+
+        if (xValue <= X[0]) {
+          result = Y[0];
+        } else if (xValue >= X[X.length - 1]) {
+          result = Y[Y.length - 1];
+        } else {
+          for (let i = 0; i < X.length - 1; i++) {
+            if (xValue >= X[i] && xValue <= X[i + 1]) {
+              const x1 = X[i],
+                x2 = X[i + 1];
+              const y1 = Y[i],
+                y2 = Y[i + 1];
+              result = y1 + ((xValue - x1) * (y2 - y1)) / (x2 - x1);
+              break;
+            }
+          }
+        }
+
+        if (result === undefined) throw new Error("No se pudo interpolar el valor.");
+
+        // Escribir resultado en celda activa
+        const activeCell = ctx.workbook.getActiveCell();
+        activeCell.values = [[result]];
+        await ctx.sync();
+
+        document.getElementById("status").textContent =
+          `Valor interpolado (${xValue}): ${result.toFixed(4)} ✅`;
+      });
+    } catch (err) {
+      console.error(err);
+      document.getElementById("status").textContent = `Error en Interpolación ❌: ${err.message}`;
+    }
+  });
 
   // ===========================
   // ⚡ XERENITY TOOLS
@@ -113,65 +186,65 @@ Office.onReady(() => {
   });
 
   // ========== COLTES LAST ==========
-document.getElementById("btnColtesLast").addEventListener("click", async () => {
-  document.getElementById("status").textContent = "Consultando últimas series COLTES...";
+  document.getElementById("btnColtesLast").addEventListener("click", async () => {
+    document.getElementById("status").textContent = "Consultando últimas series COLTES...";
 
-  // Lista fija de series
-  const coltesSeries = [
-    ["COLTES 4.75 2035-04-04", "04b0a5375511340152e500a991fb6202"],
-    ["COLTES 7 2031-03-26", "14b8d27bc31dd101c1c028710d92008c"],
-    ["COLTES 6.25 2025-11-26", "1be6ad6b20ce6d17a9febd3a16a84ccd"],
-    ["COLTES 6 2028-04-28", "28b42938a3491be73e9e3edb27d0a341"],
-    ["COLTES 7.5 2026-08-26", "2f290fdd2e7b697ffa5129376aeeb03d"],
-    ["COLTES 7.25 2050-10-26", "37cff456093349e7a656132b73409a7d"],
-    ["COLTES 3.3 2027-03-17", "388a20606f87cf27babe68605a21dbe8"],
-    ["COLTES 7 2031-03-26", "44beef76466d04b71805f73ac77eaa6e"],
-    ["COLTES 7.75 2030-09-18", "45b93ff81a7f9274ae2305c8fa8c7492"],
-    ["COLTES 5.75 2027-11-03", "4779cf6fd8ffafa88f6acb3968dc16ec"],
-    ["COLTES 3 2033-03-25", "4c60c3257b1ab2a21c84d716cd21471f"],
-    ["COLTES 7 2032-06-30", "58b363fbb6a935e2e271a934b32ac170"],
-    ["COLTES 2.25 2029-04-18", "5acb5c01180aeef3d7e5060ee0f5228f"],
-    ["COLTES 11 2024-07-24", "5deb428485a802abcd481efa1ca0f5c7"],
-    ["COLTES 3.5 2025-07-05", "6223be130b2b724adc9fe7cd7d27b204"],
-    ["COLTES 7.25 2034-10-18", "6611fc76da930ab18fea79efa11f644e"],
-    ["COLTES 9.25 2042-05-28", "a567521827d8d5c922b1bf7d6504b780"],
-    ["COLTES 6.25 2036-09-07", "c41ef5179b3c1b325a4d9c2665f3deb3"],
-    ["COLTES 3.75 2037-02-25", "cc760f9770f4f1f84ef0ee4d5c5aab9b"],
-    ["COLTES 3.75 2049-06-16", "e4a8c4350b378f4f6cb764a4cc18d396"],
-    ["COLTES 13.25 2033-09-02", "e7e6a55b233278f79c07e43fda0bde10"]
-  ];
+    // Lista fija de series
+    const coltesSeries = [
+      ["COLTES 4.75 2035-04-04", "04b0a5375511340152e500a991fb6202"],
+      ["COLTES 7 2031-03-26", "14b8d27bc31dd101c1c028710d92008c"],
+      ["COLTES 6.25 2025-11-26", "1be6ad6b20ce6d17a9febd3a16a84ccd"],
+      ["COLTES 6 2028-04-28", "28b42938a3491be73e9e3edb27d0a341"],
+      ["COLTES 7.5 2026-08-26", "2f290fdd2e7b697ffa5129376aeeb03d"],
+      ["COLTES 7.25 2050-10-26", "37cff456093349e7a656132b73409a7d"],
+      ["COLTES 3.3 2027-03-17", "388a20606f87cf27babe68605a21dbe8"],
+      ["COLTES 7 2031-03-26", "44beef76466d04b71805f73ac77eaa6e"],
+      ["COLTES 7.75 2030-09-18", "45b93ff81a7f9274ae2305c8fa8c7492"],
+      ["COLTES 5.75 2027-11-03", "4779cf6fd8ffafa88f6acb3968dc16ec"],
+      ["COLTES 3 2033-03-25", "4c60c3257b1ab2a21c84d716cd21471f"],
+      ["COLTES 7 2032-06-30", "58b363fbb6a935e2e271a934b32ac170"],
+      ["COLTES 2.25 2029-04-18", "5acb5c01180aeef3d7e5060ee0f5228f"],
+      ["COLTES 11 2024-07-24", "5deb428485a802abcd481efa1ca0f5c7"],
+      ["COLTES 3.5 2025-07-05", "6223be130b2b724adc9fe7cd7d27b204"],
+      ["COLTES 7.25 2034-10-18", "6611fc76da930ab18fea79efa11f644e"],
+      ["COLTES 9.25 2042-05-28", "a567521827d8d5c922b1bf7d6504b780"],
+      ["COLTES 6.25 2036-09-07", "c41ef5179b3c1b325a4d9c2665f3deb3"],
+      ["COLTES 3.75 2037-02-25", "cc760f9770f4f1f84ef0ee4d5c5aab9b"],
+      ["COLTES 3.75 2049-06-16", "e4a8c4350b378f4f6cb764a4cc18d396"],
+      ["COLTES 13.25 2033-09-02", "e7e6a55b233278f79c07e43fda0bde10"],
+    ];
 
-  try {
-    // Ejecutar todas las consultas en paralelo
-    const results = await Promise.allSettled(
-      coltesSeries.map(async ([name, ticker]) => {
-        const data = await XTY(ticker);
-        if (!data || data.length < 2) throw new Error("Sin datos");
-        const last = data[data.length - 1]; // [fecha, valor]
-        return [name, last[0], last[1]];
-      })
-    );
+    try {
+      // Ejecutar todas las consultas en paralelo
+      const results = await Promise.allSettled(
+        coltesSeries.map(async ([name, ticker]) => {
+          const data = await XTY(ticker);
+          if (!data || data.length < 2) throw new Error("Sin datos");
+          const last = data[data.length - 1]; // [fecha, valor]
+          return [name, last[0], last[1]];
+        })
+      );
 
-    // Construir tabla: encabezado + resultados válidos
-    const rows = [["Serie", "Fecha", "Valor"]];
-    for (const r of results) {
-      if (r.status === "fulfilled") rows.push(r.value);
-      else rows.push([coltesSeries[results.indexOf(r)][0], "Error", "—"]);
+      // Construir tabla: encabezado + resultados válidos
+      const rows = [["Serie", "Fecha", "Valor"]];
+      for (const r of results) {
+        if (r.status === "fulfilled") rows.push(r.value);
+        else rows.push([coltesSeries[results.indexOf(r)][0], "Error", "—"]);
+      }
+
+      // Escribir en Excel
+      await Excel.run(async (ctx) => {
+        const sheet = ctx.workbook.worksheets.getActiveWorksheet();
+        const startCell = ctx.workbook.getActiveCell();
+        const range = startCell.getResizedRange(rows.length - 1, rows[0].length - 1);
+        range.values = rows;
+        await ctx.sync();
+      });
+
+      document.getElementById("status").textContent = "Últimos valores COLTES cargados ✅";
+    } catch (err) {
+      console.error(err);
+      document.getElementById("status").textContent = `Error en COLTES Last ❌: ${err.message}`;
     }
-
-    // Escribir en Excel
-    await Excel.run(async (ctx) => {
-      const sheet = ctx.workbook.worksheets.getActiveWorksheet();
-      const startCell = ctx.workbook.getActiveCell();
-      const range = startCell.getResizedRange(rows.length - 1, rows[0].length - 1);
-      range.values = rows;
-      await ctx.sync();
-    });
-
-    document.getElementById("status").textContent = "Últimos valores COLTES cargados ✅";
-  } catch (err) {
-    console.error(err);
-    document.getElementById("status").textContent = `Error en COLTES Last ❌: ${err.message}`;
-  }
-});
+  });
 });
