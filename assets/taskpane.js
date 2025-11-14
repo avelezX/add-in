@@ -33,77 +33,102 @@ Office.onReady(() => {
       document.getElementById("status").textContent = `Error ❌: ${err.message}`;
     });
   });
-  // 🧮 SAMÁN TOOLS - Interpolación lineal (con input para el año)
-  document.getElementById("btnInterpolar").addEventListener("click", async () => {
-    const xValue = parseFloat(document.getElementById("yearInput").value.trim());
-    if (isNaN(xValue)) {
-      document.getElementById("status").textContent = "⚠️ Debes ingresar un año válido.";
-      return;
-    }
+  // ============================
+  //       INTERPOLACIÓN
+  // ============================
+  let interp_X = null;
+  let interp_Y = null;
 
-    document.getElementById("status").textContent = "Selecciona los rangos para interpolar...";
-
+  // OK Años
+  document.getElementById("btnPickX").addEventListener("click", async () => {
     try {
       await Excel.run(async (ctx) => {
-        const sheet = ctx.workbook.worksheets.getActiveWorksheet();
-
-        // 🔹 Paso 1: seleccionar años
-        document.getElementById("status").textContent =
-          "Selecciona las celdas de los años (X) y presiona Enter.";
-        await new Promise((resolve) => setTimeout(resolve, 1800));
-        const rangeX = ctx.workbook.getSelectedRange();
-        rangeX.load("values,address");
+        const range = ctx.workbook.getSelectedRange();
+        range.load("values");
         await ctx.sync();
 
-        // 🔹 Paso 2: seleccionar tasas
+        interp_X = range.values.map((r) => r[0]); // extraer columna
         document.getElementById("status").textContent =
-          "Selecciona las celdas de las tasas (Y) y presiona Enter.";
-        await new Promise((resolve) => setTimeout(resolve, 1800));
-        const rangeY = ctx.workbook.getSelectedRange();
-        rangeY.load("values,address");
-        await ctx.sync();
-
-        // Validaciones
-        const X = rangeX.values.flat().map(Number);
-        const Y = rangeY.values.flat().map(Number);
-
-        if (X.length !== Y.length) throw new Error("Los rangos X e Y deben tener el mismo tamaño.");
-        if (X.some(isNaN) || Y.some(isNaN))
-          throw new Error("Los rangos deben contener solo números.");
-
-        // 🔹 Interpolación
-        let result;
-
-        if (xValue <= X[0]) {
-          result = Y[0];
-        } else if (xValue >= X[X.length - 1]) {
-          result = Y[Y.length - 1];
-        } else {
-          for (let i = 0; i < X.length - 1; i++) {
-            if (xValue >= X[i] && xValue <= X[i + 1]) {
-              const x1 = X[i],
-                x2 = X[i + 1];
-              const y1 = Y[i],
-                y2 = Y[i + 1];
-              result = y1 + ((xValue - x1) * (y2 - y1)) / (x2 - x1);
-              break;
-            }
-          }
-        }
-
-        if (result === undefined) throw new Error("No se pudo interpolar el valor.");
-
-        // Escribir resultado en celda activa
-        const activeCell = ctx.workbook.getActiveCell();
-        activeCell.values = [[result]];
-        await ctx.sync();
-
-        document.getElementById("status").textContent =
-          `Valor interpolado (${xValue}): ${result.toFixed(4)} ✅`;
+          "✓ Rango de AÑOS (X) guardado correctamente.";
       });
     } catch (err) {
-      console.error(err);
-      document.getElementById("status").textContent = `Error en Interpolación ❌: ${err.message}`;
+      document.getElementById("status").textContent = "❌ Error guardando AÑOS (X): " + err.message;
+    }
+  });
+
+  // OK Tasas
+  document.getElementById("btnPickY").addEventListener("click", async () => {
+    try {
+      await Excel.run(async (ctx) => {
+        const range = ctx.workbook.getSelectedRange();
+        range.load("values");
+        await ctx.sync();
+
+        interp_Y = range.values.map((r) => r[0]);
+        document.getElementById("status").textContent =
+          "✓ Rango de TASAS (Y) guardado correctamente.";
+      });
+    } catch (err) {
+      document.getElementById("status").textContent =
+        "❌ Error guardando TASAS (Y): " + err.message;
+    }
+  });
+
+  // Botón Interpolar
+  document.getElementById("btnInterp").addEventListener("click", async () => {
+    try {
+      const X = interp_X;
+      const Y = interp_Y;
+
+      if (!X || !Y) {
+        document.getElementById("status").textContent =
+          "⚠️ Debes seleccionar primero AÑOS y TASAS.";
+        return;
+      }
+
+      if (X.length !== Y.length) {
+        document.getElementById("status").textContent =
+          "⚠️ Las listas X e Y deben tener igual longitud.";
+        return;
+      }
+
+      const year = parseFloat(document.getElementById("interpYear").value);
+      if (isNaN(year)) {
+        document.getElementById("status").textContent = "⚠️ Debes ingresar un año válido.";
+        return;
+      }
+
+      // Ordenamos por X
+      const pairs = X.map((x, i) => ({ x, y: Y[i] })).sort((a, b) => a.x - b.x);
+
+      let result;
+
+      if (year <= pairs[0].x) {
+        result = pairs[0].y;
+      } else if (year >= pairs[pairs.length - 1].x) {
+        result = pairs[pairs.length - 1].y;
+      } else {
+        for (let i = 0; i < pairs.length - 1; i++) {
+          if (year >= pairs[i].x && year <= pairs[i + 1].x) {
+            const { x: x1, y: y1 } = pairs[i];
+            const { x: x2, y: y2 } = pairs[i + 1];
+            result = y1 + ((year - x1) * (y2 - y1)) / (x2 - x1);
+            break;
+          }
+        }
+      }
+
+      // Escribir en celda activa
+      await Excel.run(async (ctx) => {
+        const cell = ctx.workbook.getActiveCell();
+        cell.values = [[result]];
+        await ctx.sync();
+      });
+
+      document.getElementById("status").textContent =
+        `✓ Resultado interpolado (${year}): ${result}`;
+    } catch (err) {
+      document.getElementById("status").textContent = "❌ Error interpolando: " + err.message;
     }
   });
 
