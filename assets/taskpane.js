@@ -132,24 +132,37 @@ Office.onReady(() => {
         }
 
         // Leer todos los años seleccionados y calcular resultados
-        const results = [];
+        if (rows === 1 && cols === 1) {
+          // Caso celda única → tratar como columna de 1 elemento
+          const year = range.values[0][0];
+          const result = interpolarValor(year);
 
-        if (isColumn) {
+          const target = range.getOffsetRange(0, 1); // escribir a la derecha
+          target.values = [[result]];
+        } else if (rows > 1 && cols === 1) {
+          // COLUMNA
+          const results = [];
           for (let r = 0; r < rows; r++) {
             const year = range.values[r][0];
-            results.push([interpolarValor(year)]);
+            results.push([interpolarValor(year)]); // matriz vertical
           }
 
-          // Escribir resultados a la derecha
-          const target = range.getOffsetRange(0, 1);
+          const target = range.getOffsetRange(0, 1); // derecha
           target.getResizedRange(rows - 1, 0).values = results;
-        } else if (isRow) {
+        } else if (rows === 1 && cols > 1) {
+          // FILA
           const row = range.values[0];
           const interpolados = row.map((year) => interpolarValor(year));
 
-          // Escribir resultados debajo
-          const target = range.getOffsetRange(1, 0);
-          target.getResizedRange(0, cols - 1).values = [interpolados];
+          const matrix = [interpolados]; // matriz 2D horizontal
+
+          const target = range.getOffsetRange(1, 0); // debajo
+          target.getResizedRange(0, cols - 1).values = matrix;
+        } else {
+          // Caso no permitido (rangos 2D)
+          document.getElementById("status").textContent =
+            "❌ Selecciona solo una fila o una columna (no rangos 2D).";
+          return;
         }
 
         await ctx.sync();
