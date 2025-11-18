@@ -131,37 +131,44 @@ Office.onReady(() => {
           return null;
         }
 
-        // Leer todos los años seleccionados y calcular resultados
+        // --- ESCRITURA FINAL EN EXCEL (SIN ERRORES DE DIMENSIONES) ---
         if (rows === 1 && cols === 1) {
-          // Caso celda única → tratar como columna de 1 elemento
+          // Celda única → escribir a la derecha
           const year = range.values[0][0];
           const result = interpolarValor(year);
 
-          const target = range.getOffsetRange(0, 1); // escribir a la derecha
+          const target = range.getOffsetRange(0, 1);
           target.values = [[result]];
-        } else if (rows > 1 && cols === 1) {
-          // COLUMNA
-          const results = [];
-          for (let r = 0; r < rows; r++) {
-            const year = range.values[r][0];
-            results.push([interpolarValor(year)]); // matriz vertical
-          }
-
-          const target = range.getOffsetRange(0, 1); // derecha
-          target.getResizedRange(rows - 1, 0).values = results;
         } else if (rows === 1 && cols > 1) {
-          // FILA
+          // FILA → escribir debajo
           const row = range.values[0];
           const interpolados = row.map((year) => interpolarValor(year));
 
-          const matrix = [interpolados]; // matriz 2D horizontal
+          // Crear un rango exacto 1 x N debajo de la selección
+          const target = range
+            .getOffsetRange(1, 0)
+            .getCell(0, 0)
+            .getResizedRange(0, cols - 1);
 
-          const target = range.getOffsetRange(1, 0); // debajo
-          target.getResizedRange(0, cols - 1).values = matrix;
+          target.values = [interpolados]; // matriz horizontal 1 × N
+        } else if (rows > 1 && cols === 1) {
+          // COLUMNA → escribir derecha
+          const interpolados = [];
+          for (let r = 0; r < rows; r++) {
+            const year = range.values[r][0];
+            interpolados.push([interpolarValor(year)]); // matriz vertical N × 1
+          }
+
+          // Crear un rango exacto N x 1 a la derecha de la selección
+          const target = range
+            .getOffsetRange(0, 1)
+            .getCell(0, 0)
+            .getResizedRange(rows - 1, 0);
+
+          target.values = interpolados;
         } else {
-          // Caso no permitido (rangos 2D)
           document.getElementById("status").textContent =
-            "❌ Selecciona solo una fila o una columna (no rangos 2D).";
+            "❌ Selecciona solo una fila o una columna.";
           return;
         }
 
