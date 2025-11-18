@@ -82,52 +82,83 @@ Office.onReady(() => {
 
       if (!X || !Y) {
         document.getElementById("status").textContent =
-          "⚠️ Debes seleccionar primero AÑOS y TASAS.";
+          "❌ Primero debes guardar los rangos X e Y.";
         return;
       }
 
       if (X.length !== Y.length) {
         document.getElementById("status").textContent =
-          "⚠️ Las listas X e Y deben tener igual longitud.";
+          "❌ Los rangos X e Y deben tener la misma cantidad de datos.";
         return;
       }
 
-      const year = parseFloat(document.getElementById("interpYear").value);
-      if (isNaN(year)) {
-        document.getElementById("status").textContent = "⚠️ Debes ingresar un año válido.";
-        return;
-      }
-
-      // Ordenamos por X
-      const pairs = X.map((x, i) => ({ x, y: Y[i] })).sort((a, b) => a.x - b.x);
-
-      let result;
-
-      if (year <= pairs[0].x) {
-        result = pairs[0].y;
-      } else if (year >= pairs[pairs.length - 1].x) {
-        result = pairs[pairs.length - 1].y;
-      } else {
-        for (let i = 0; i < pairs.length - 1; i++) {
-          if (year >= pairs[i].x && year <= pairs[i + 1].x) {
-            const { x: x1, y: y1 } = pairs[i];
-            const { x: x2, y: y2 } = pairs[i + 1];
-            result = y1 + ((year - x1) * (y2 - y1)) / (x2 - x1);
-            break;
-          }
-        }
-      }
-
-      // Escribir en celda activa
       await Excel.run(async (ctx) => {
-        const cell = ctx.workbook.getActiveCell();
-        cell.values = [[result]];
+        const range = ctx.workbook.getSelectedRange();
+        range.load(["values", "rowCount", "columnCount", "address"]);
         await ctx.sync();
-      });
 
-      document.getElementById("status").textContent =
-        `✓ Resultado interpolado (${year}): ${result}`;
+        const rows = range.rowCount;
+        const cols = range.columnCount;
+
+        // ❌ No permitir rangos 2D
+        if (rows > 1 && cols > 1) {
+          document.getElementById("status").textContent =
+            "❌ Selecciona solo una fila o una columna (no rangos 2D).";
+          return;
+        }
+
+        // Determinar orientación
+        const isColumn = rows > 1;
+        const isRow = cols > 1;
+
+        // Construir pares ordenados para interpolación
+        const pairs = X.map((x, i) => ({ x, y: Y[i] })).sort((a, b) => a.x - b.x);
+
+        // Función interna para interpolar un valor
+        function interpolarValor(year) {
+          if (isNaN(year)) return null;
+
+          if (year <= pairs[0].x) return pairs[0].y;
+          if (year >= pairs[pairs.length - 1].x) return pairs[pairs.length - 1].y;
+
+          for (let i = 0; i < pairs.length - 1; i++) {
+            if (year >= pairs[i].x && year <= pairs[i + 1].x) {
+              const { x: x1, y: y1 } = pairs[i];
+              const { x: x2, y: y2 } = pairs[i + 1];
+              return y1 + ((year - x1) * (y2 - y1)) / (x2 - x1);
+            }
+          }
+          return null;
+        }
+
+        // Leer todos los años seleccionados y calcular resultados
+        const results = [];
+
+        if (isColumn) {
+          for (let r = 0; r < rows; r++) {
+            const year = range.values[r][0];
+            results.push([interpolarValor(year)]);
+          }
+
+          // Escribir resultados a la derecha
+          const target = range.getOffsetRange(0, 1);
+          target.getResizedRange(rows - 1, 0).values = results;
+        } else if (isRow) {
+          const row = range.values[0];
+          const interpolados = row.map((year) => interpolarValor(year));
+
+          // Escribir resultados debajo
+          const target = range.getOffsetRange(1, 0);
+          target.getResizedRange(0, cols - 1).values = [interpolados];
+        }
+
+        await ctx.sync();
+
+        document.getElementById("status").textContent =
+          `✓ Interpolación completada (${rows * cols} valores).`;
+      });
     } catch (err) {
+      console.error(err);
       document.getElementById("status").textContent = "❌ Error interpolando: " + err.message;
     }
   });
