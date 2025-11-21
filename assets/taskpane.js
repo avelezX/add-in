@@ -118,8 +118,25 @@ Office.onReady(() => {
         function interpolarValor(year) {
           if (isNaN(year)) return null;
 
-          if (year <= pairs[0].x) return pairs[0].y;
-          if (year >= pairs[pairs.length - 1].x) return pairs[pairs.length - 1].y;
+          // EXTRAPOLACIÓN HACIA ATRÁS
+          if (year < pairs[0].x) {
+            const x1 = pairs[0].x;
+            const y1 = pairs[0].y;
+            const x2 = pairs[1].x;
+            const y2 = pairs[1].y;
+            const slope = (y2 - y1) / (x2 - x1);
+            return y1 + (year - x1) * slope;
+          }
+
+          // EXTRAPOLACIÓN HACIA ADELANTE
+          if (year > pairs[pairs.length - 1].x) {
+            const x1 = pairs[pairs.length - 2].x;
+            const y1 = pairs[pairs.length - 2].y;
+            const x2 = pairs[pairs.length - 1].x;
+            const y2 = pairs[pairs.length - 1].y;
+            const slope = (y2 - y1) / (x2 - x1);
+            return y2 + (year - x2) * slope;
+          }
 
           for (let i = 0; i < pairs.length - 1; i++) {
             if (year >= pairs[i].x && year <= pairs[i + 1].x) {
